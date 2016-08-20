@@ -1,3 +1,4 @@
+// MODEL
 var cats =
     [{
         "name": "Alpha",
@@ -42,7 +43,7 @@ var cats =
     }]
 ;
 
-
+// VIEW
 var formattedUlHtmlStart = '<div class="col-sm-3"><ul id="catList"></ul></div>';
 var formattedLiHtmlStart = '<li id="catItem">%data%</li>';
 
@@ -53,6 +54,7 @@ var formattedCatname = '<div class="col-sm-6" id="catName">%data%</div>';
 var formattedCatctr = '<div class="col-sm-6" id="catCtr">%data%</div>';
 var formattedCatimg = '<img id="catImg" class="img-responsive" style="max-width: 100%" src="%data%" sizes="100w" alt="%alt%">';
 
+// VIEW
 function display() {
 
     // initial catList
@@ -73,32 +75,50 @@ function display() {
     var htmlCatctr = formattedCatctr.replace("%data%", "Click count : " + cats[0].ctr);
     var htmlCatData = formattedDataHtmlStart.replace("%data%", htmlCatname + htmlCatctr);
     var htmlCatimg = formattedCatimg.replace("%data%", cats[0].img[0]);
+    htmlCatimg = htmlCatimg.replace("%alt%", cats[0].name);
+    htmlCatimg = htmlCatimg.replace("catImg", "catImg_" + cats[0].name);
     $('#catDisplay').append(htmlCatData);
     $('#catDisplay').append(htmlCatimg);
 
+    // OCTOPUS
     // modify catDisplay function
-    var modifyCtr = function() {
-        // console.log(this.id);
+    var modifyImg = function() {
         // console.log(this);
-        var catPic = document.getElementById("catImg");
+        var catPic = document.getElementById("catDisplay").lastChild;
+        // console.log(catPic);
         $('#catName').text(this.id);
         for (var i = 0; i < cats.length; i++) {
             var catcopy = cats[i];
             if (catcopy.name == this.id) {
-                catcopy.ctr = catcopy.ctr + 1;
-                // console.log (catcopy.name + catcopy.ctr);
                 $('#catCtr').text("Click count : " + catcopy.ctr);
+                catPic.id = "catImg_" + catcopy.name;
                 catPic.src = catcopy.img;
+                catPic.alt = catcopy.name;
             }
         }
     };
 
+    // modify number of clicks on image function
+    var modifyCtr = function() {
+        console.log(this.id);
+        for (var i = 0; i < cats.length; i++) {
+            var catcopy = cats[i];
+            if (("catImg_" + catcopy.name) == this.id) {
+                catcopy.ctr = catcopy.ctr + 1;
+                $('#catCtr').text("Click count : " + catcopy.ctr);
+            }
+        }
+    }
+
     // Event Listener for catImgs
+    var currentPic = document.getElementById("catImg_" + cats[0].name);
+    currentPic.addEventListener("click", modifyCtr, false);
+    // console.log(currentPic);
+
     for (var i = 0; i < cats.length; i++) {
         var catcopy = cats[i];
         var currentCat = document.getElementById(catcopy.name);
-        currentCat.addEventListener("click", modifyCtr, false);
-        // console.log(currentCat.id);
+        currentCat.addEventListener("click", modifyImg, false);
     }
 }
 
